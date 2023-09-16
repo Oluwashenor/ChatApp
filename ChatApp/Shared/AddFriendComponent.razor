@@ -1,0 +1,30 @@
+﻿@using ChatApp.Data.Services;
+@using ChatApp.ViewModels;
+
+@inject IFriendService friendService; 
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+<div class="row" style="margin:7px;">
+    <div class="col-1">
+        <img src="/images/me.jpg" style="border-radius:50%;width:auto;height:50px;" class="img-thumbnail" alt="...">
+    </div>
+    <div style="padding-top:10px;" class="col-9">
+        <span>@Friend?.Name</span>
+        
+    </div>
+    <div class="col-2">
+        <button type="button" class="btn btn-outline-primary">Add</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public FindFriendViewModel? Friend { get; set; }
+    public string? UserId { get; set; } = 
+
+    private async Task<bool> AddFriend()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        return await friendService.AddFriend(authState.User.Identity, Friend?.Id);
+    }
+}

@@ -1,0 +1,33 @@
+﻿@page "/findFriends"
+@using ChatApp.Data.Services;
+@using ChatApp.ViewModels;
+@using Microsoft.AspNetCore.Identity;
+
+@inject IFriendService friendService
+@inject UserManager<IdentityContext> userManager;
+
+<h3>Find Friends</h3>
+
+<div class="container">
+    @if(friends == null)
+    {
+        <span>Loading Friends.......</span>
+    }
+    else
+    {
+        @foreach (var friend in friends)
+        {
+            <AddFriendComponent Friend="@friend" />
+        }
+    }
+</div>
+
+@code {
+    private List<FindFriendViewModel>? friends;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(5000);
+        friends = friendService.FindFriends();
+    }
+}

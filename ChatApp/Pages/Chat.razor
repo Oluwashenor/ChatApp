@@ -1,0 +1,29 @@
+﻿@page "/chat"
+
+<h3>Chat</h3>
+
+<div class="row" style="height:450px;">
+    @foreach(var m in messages)
+    {
+        <span>@m</span>
+    }
+</div>
+
+<div class="row">
+    <div class="col-lg-11">
+        <input type="text" placeholder="Type your message" @bind="message" class="form-control" />
+    </div>
+    <div class="col-lg-1"><button @onclick="sendMessage" type="button">Send</button></div>
+  </div>
+
+
+@code {
+    private List<string> messages = new();
+    private string? message;
+
+    public void sendMessage()
+    {
+        messages.Add(message);
+        message = String.Empty;
+    }
+}

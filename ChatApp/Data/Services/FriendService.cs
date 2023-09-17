@@ -1,7 +1,9 @@
 ﻿using ChatApp.Data.Models.Friend;
 using ChatApp.Pages;
+using ChatApp.Utilities;
 using ChatApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace ChatApp.Data.Services
@@ -15,21 +17,25 @@ namespace ChatApp.Data.Services
             _context = context;
             _userManager = userManager;
         }
-        public List<FindFriendViewModel> FindFriends()
+        public async Task<List<FindFriendViewModel>> FindFriends()
         {
-            var users = _context.Users.ToList();
+            var userId = SharedServices.GetUserId();
+            var users = _context.Users.Where(x=>x.Id != userId).ToList();
+            var friends = await _context.Friends.Where(x => x.PartyA == userId).ToListAsync();
             return users.Select(x =>
-            new FindFriendViewModel
             {
-                Name = x.UserName,
-                Id = x.Id,
-                Email = x.Email
+                var userFriend = friends.FirstOrDefault(f => f.PartyB == x.Id);
+                return new FindFriendViewModel
+                {
+                    Name = x.UserName,
+                    Id = x.Id,
+                    Email = x.Email,
+                };
             }).ToList();
         }
 
-        public async Task<bool> AddFriend(ClaimsPrincipal user, string partyId)
+        public async Task<bool> AddFriend(string userId, string partyId)
         {
-            var userId = _userManager.GetUserId(user);
             var friendRequest = new Friend
             {
                 PartyA = userId,
@@ -43,7 +49,7 @@ namespace ChatApp.Data.Services
 
     public interface IFriendService
     {
-        Task<bool> AddFriend(ClaimsPrincipal user, string partyId);
+        Task<bool> AddFriend(string userId, string partyId);
         List<FindFriendViewModel> FindFriends();
     }
 }

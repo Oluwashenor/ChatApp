@@ -1,4 +1,5 @@
 ﻿@using ChatApp.Data.Services;
+@using ChatApp.Utilities;
 @using ChatApp.ViewModels;
 
 @inject IFriendService friendService; 
@@ -13,18 +14,18 @@
         
     </div>
     <div class="col-2">
-        <button type="button" class="btn btn-outline-primary">Add</button>
+        <button type="button" @onclick="AddFriend" class="btn btn-outline-primary">Add</button>
     </div>
 </div>
 
 @code {
     [Parameter]
     public FindFriendViewModel? Friend { get; set; }
-    public string? UserId { get; set; } = 
+    public string? UserId { get; set; } = SharedServices.GetUserId();
 
     private async Task<bool> AddFriend()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        return await friendService.AddFriend(authState.User.Identity, Friend?.Id);
+        return await friendService.AddFriend(UserId, Friend?.Id);
     }
 }
